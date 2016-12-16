@@ -63,24 +63,16 @@ class LearningAgent(Agent):
             state_key = get_state_key(state)
             if state_key not in self.Q.keys():
                 #   For each action, set the Q-value for the state-action pair to 0
-                state_dict = {}
-                for action in self.valid_actions:
-                    state_dict[action] = 0
-                self.Q[state_key] = state_dict
+                self.Q[state_key] = {action: 0 for action in self.valid_actions}
         return state
 
 
     def get_maxQ(self, state):
         """ The get_max_Q function is called when the agent is asked to find the
             maximum Q-value of all actions based on the 'state' the smartcab is in. """
-
         # Calculate the maximum Q-value of all actions for a given state
         state_dict = self.Q[get_state_key(state)]
-        maxQ = 0        
-        for key in state_dict.keys():
-            q_value = state_dict[key]
-            if q_value > maxQ:
-                maxQ = q_value
+        maxQ = max(state_dict.values())       
         return maxQ 
 
 
@@ -135,8 +127,9 @@ class LearningAgent(Agent):
         if self.learning:
             state_key = get_state_key(state)
             q_value = self.Q[state_key][action]
-            # new q value is the old value + alpha times the reward that is received
-            new_q_value = q_value + self.alpha * reward
+            
+            # new q value is (1 - alpha) * old value + alpha times the reward that is received
+            new_q_value = (1 - self.alpha) * q_value + self.alpha * reward
             self.Q[state_key][action] = new_q_value
         return
 
@@ -198,7 +191,6 @@ def run():
     sim.run(n_test = 10)
     
 def get_state_key(state):
-    #return hash(str(state))
     return "{}|{}|{}|{}|{}".format(state[0], state[1]["light"], state[1]["oncoming"], state[1]["right"], state[1]["left"])
 
 
