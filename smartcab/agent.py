@@ -36,7 +36,7 @@ class LearningAgent(Agent):
             self.alpha = 0
         # Update epsilon using a decay function of your choice
         else:
-            self.epsilon = self.epsilon - 0.001                
+            self.epsilon = self.epsilon - 0.001              
         # Update additional class parameters as needed
         print "epsilon:{}".format(self.epsilon)
         print "alpha:{}".format(self.alpha) 
@@ -112,7 +112,10 @@ class LearningAgent(Agent):
             #   Otherwise, choose an action with the highest Q-value for the current state
             else:
                 state_dict = self.Q[get_state_key(state)]
-                action = max(state_dict, key=state_dict.get)
+                # compute max value and get keys with these max value. Then choose one of these at random 
+                maxValue = max(state_dict.values())
+                maxKeys = [key for key,val in state_dict.iteritems() if val == maxValue]
+                action = random.choice(maxKeys)
         print "Chosen action: {}".format(action)
         return action
 
